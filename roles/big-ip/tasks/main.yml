@@ -1,0 +1,100 @@
+---
+# tasks file for big-ip
+- name: set variables to right type
+      set_fact:
+        bigip_virtual_server_profile: "{{ bigip_virtual_server_profile | from_yaml }}"
+        bigip_virtual_server_policies: "{{ bigip_virtual_server_policies | from_yaml }}"
+        bigip_virtual_server_enabled_vlans: "{{ bigip_virtual_server_enabled_vlans | from yaml }}"
+
+- name: Create pool
+  bigip_pool:
+    state: "{{ bigip_pool_state }}"
+    name: "{{ bigip_pool_name }}"
+    partition: Common
+    lb_method: "{{ bigip_pool_lb_method }}"
+    slow_ramp_time: "{{ bigip_pool_slow_ramp_time }}"
+    provider:
+      server: "{{ bigip_server_address }}"
+      user: "{{ bigip_admin }}"
+      password: "{{ bigip_admin_password }}"
+  when: new_pool == true or all_new == true    
+
+
+
+- name: Add virtual server
+  bigip_virtual_server:
+    state: "{{ bigip_virtual_server_state }}"
+    partition: Common
+    name: "{{ bigip_virtual_server_name }}"
+    destination: "{{ bigip_virtual_server_ip }}"
+    port: "{{ bigip_virtual_server_port }}"
+    pool: "{{ bigip_pool_name }}"
+    snat: Automap
+    description: "{{ bigip_virtual_server_discription }}"
+    profiles: "{{ bigip_virtual_server_profile }}"
+    #  - http
+    #  - fix
+    #  - name: clientssl
+    #    context: server-side
+    #  - name: ilx
+    #    context: client-side
+    policies: "{{ bigip_virtual_server_policies }}"
+    #  - my-ltm-policy-for-asm
+    #  - ltm-uri-policy
+    #  - ltm-policy-2
+    #  - ltm-policy-3
+    enabled_vlans: "{{ bigip_virtual_server_enabled_vlans }}"
+    #  - /Common/vlan2
+    provider:
+      server: "{{ bigip_server_address }}"
+      user: "{{ bigip_admin }}"
+      password: "{{ bigip_admin_password }}"
+  when: new_virtual_server == true or all_new == true   
+
+- name: Add pool member single
+  bigip_pool_member:
+    pool: "{{ bigip_pool_name }}"
+    partition: Common
+    host: "{{ bigip_pool_member_address }}"
+    port: "{{ bigip_pool_member_port }}"
+    description: "{{ bigip_pool_member_description }} "
+    connection_limit: "{{ bigip_pool_member_connection_limit }}"
+    rate_limit: "{{bigip_pool_member_rate_limit }}"
+    ratio: "{{ bigip_pool_member_ratio }}"
+    provider:
+      server: "{{ bigip_server_address }}"
+      user: "{{ bigip_admin }}"
+      password: "{{ bigip_admin_password }}"
+  when: single_new_member == single    
+
+- name: Add pool members aggregate, remove non aggregates
+  bigip_pool_member:
+    pool: "{{ bigip_pool_name }}"
+    aggregate: "{{ bigip_pool_member_aggregate }}"
+      #- host: 192.168.1.1
+      #  partition: Common
+      #  port: 80
+      #  description: web server
+      #  connection_limit: 100
+      #  rate_limit: 50
+      #  ratio: 2
+      #- host: 192.168.1.2
+      #  partition: Common
+      #  port: 80
+      #  description: web server
+      #  connection_limit: 100
+      #  rate_limit: 50
+      #  ratio: 2
+      #- host: 192.168.1.3
+      #  partition: Common
+      #  port: 80
+      #  description: web server
+      #  connection_limit: 100
+      #  rate_limit: 50
+      #  ratio: 2
+    replace_all_with: "{{ bigip_pool_member_replace_all }}"
+    provider:
+      server: "{{ bigip_server_address }}"
+      user: "{{ bigip_admin }}"
+      password: "{{ bigip_admin_password }}"
+  when: single_new_member == multi
