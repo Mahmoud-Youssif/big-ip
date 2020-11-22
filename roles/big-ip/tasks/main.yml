@@ -17,10 +17,7 @@
       server: "{{ bigip_server_address }}"
       user: "{{ bigip_admin }}"
       password: "{{ bigip_admin_password }}"
-  when: new_pool == true or all_new == true    
-
-
-
+    
 - name: Add virtual server
   bigip_virtual_server:
     state: "{{ bigip_virtual_server_state }}"
@@ -49,24 +46,7 @@
       server: "{{ bigip_server_address }}"
       user: "{{ bigip_admin }}"
       password: "{{ bigip_admin_password }}"
-  when: new_virtual_server == true or all_new == true   
-
-- name: Add pool member single
-  bigip_pool_member:
-    pool: "{{ bigip_pool_name }}"
-    partition: Common
-    host: "{{ bigip_pool_member_address }}"
-    port: "{{ bigip_pool_member_port }}"
-    description: "{{ bigip_pool_member_description }} "
-    connection_limit: "{{ bigip_pool_member_connection_limit }}"
-    rate_limit: "{{bigip_pool_member_rate_limit }}"
-    ratio: "{{ bigip_pool_member_ratio }}"
-    provider:
-      server: "{{ bigip_server_address }}"
-      user: "{{ bigip_admin }}"
-      password: "{{ bigip_admin_password }}"
-  when: single_new_member == single    
-
+   
 - name: Add pool members aggregate, remove non aggregates
   bigip_pool_member:
     pool: "{{ bigip_pool_name }}"
@@ -97,4 +77,4 @@
       server: "{{ bigip_server_address }}"
       user: "{{ bigip_admin }}"
       password: "{{ bigip_admin_password }}"
-  when: single_new_member == multi
+  
