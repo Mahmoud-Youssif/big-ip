@@ -11,7 +11,7 @@
       
   tasks:
      - name: set facts
-       set_facts:
+       set_fact:
         bigip_pool_member_aggregate: "{{ bigip_pool_member_aggregate |from_yaml }}"
      - name: Add pool members aggregate, remove non aggregates
        bigip_pool_member:
