@@ -1,41 +1,42 @@
 ---
 - hosts: localhost
   vars:
-    bigip_pool_name: ""
-    bigip_pool_member_aggregate: ""
-    bigip_pool_member_replace_all: ""
-    bigip_server_address: ""
-    bigip_admin: ""
-    bigip_admin_password: ""
+    bigip_pool_name: my-pool
      
+    bigip_pool_member_replace_all: yes
+    bigip_server_address: 192.168.122.5
+    bigip_admin: admin
+    bigip_admin_password: secret
+    bigip_pool_member_aggregate:
+      - host: 192.168.1.1
+        partition: Common
+        port: 80
+        description: web server
+        connection_limit: 100
+        rate_limit: 50
+        ratio: 2
+      - host: 192.168.1.2
+        partition: Common
+        port: 80
+        description: web server
+        connection_limit: 100
+        rate_limit: 50
+        ratio: 2
+      - host: 192.168.1.3
+        partition: Common
+        port: 80
+        description: web server
+        connection_limit: 100
+        rate_limit: 50
+        ratio: 2     
+
   tasks:
      - name: Add pool members aggregate, remove non aggregates
        bigip_pool_member:
         pool: "{{ bigip_pool_name }}"
         aggregate: "{{ bigip_pool_member_aggregate }}"
-         #- host: 192.168.1.1
-         #  partition: Common
-         #  port: 80
-         #  description: web server
-         #  connection_limit: 100
-         #  rate_limit: 50
-         #  ratio: 2
-         #- host: 192.168.1.2
-         #  partition: Common
-         #  port: 80
-         #  description: web server
-         #  connection_limit: 100
-         #  rate_limit: 50
-         #  ratio: 2
-         #- host: 192.168.1.3
-         #  partition: Common
-         #  port: 80
-         #  description: web server
-         #  connection_limit: 100
-         #  rate_limit: 50
-         #  ratio: 2
-       replace_all_with: "{{ bigip_pool_member_replace_all }}"
-       provider:
+        replace_all_with: "{{ bigip_pool_member_replace_all }}"
+        provider:
          server: "{{ bigip_server_address }}"
          user: "{{ bigip_admin }}"
          password: "{{ bigip_admin_password }}"    

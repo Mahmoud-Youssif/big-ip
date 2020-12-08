@@ -1,0 +1,37 @@
+---
+- hosts: localhost
+  vars:
+    bigip_pool_member:
+      - host: 192.168.1.2
+        port: 80
+        name: web1
+        description: web server
+        ratio: 1
+      - host: 192.168.1.3
+        port: 80
+        name: web2
+        description: web server
+        ratio: 1
+      - host: 192.168.1.4
+        port: 80
+        name: web3
+        description: web server
+        ratio: 1    
+
+  tasks:
+    - name: Add pool members
+      bigip_pool_member:
+        pool: test
+        partition: common
+        host: "{{ item.host }}"
+        name: "{{ item.name }}"
+        port: "{{ item.port }}"
+        description: "{{ item.description }}"
+        ratio: "{{ item.ratio }}"
+        provider:
+           server: 192.168.122.5
+           user: admin
+           password: secret
+      delegate_to: localhost     
+      loop: "{{ bigip_pool_member }}"     
+       
