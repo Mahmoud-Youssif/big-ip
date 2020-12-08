@@ -1,7 +1,6 @@
 ---
 - hosts: localhost
-  set_facts:
-     bigip_pool_member_aggregate: "{{ bigip_pool_member_aggregate |from_yaml }}"
+  
   vars:
     bigip_pool_name: my-pool
     bigip_pool_member_replace_all: yes
@@ -11,6 +10,9 @@
     bigip_pool_member_aggregate: ""
       
   tasks:
+     - name: set facts
+       set_facts:
+        bigip_pool_member_aggregate: "{{ bigip_pool_member_aggregate |from_yaml }}"
      - name: Add pool members aggregate, remove non aggregates
        bigip_pool_member:
         pool: "{{ bigip_pool_name }}"
