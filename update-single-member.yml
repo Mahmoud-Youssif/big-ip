@@ -7,7 +7,7 @@
     bigip_server_address: 192.168.122.5
     bigip_admin: admin
     bigip_admin_password: secret
-    bigip_pool_member_aggregate: ""
+    bigip_pool_member_aggregate: []
       
   tasks:
      - name: set facts
