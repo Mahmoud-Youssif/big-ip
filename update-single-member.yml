@@ -7,29 +7,8 @@
     bigip_server_address: 192.168.122.5
     bigip_admin: admin
     bigip_admin_password: secret
-    bigip_pool_member_aggregate:
-      - host: 192.168.1.1
-        partition: Common
-        port: 80
-        description: web server
-        connection_limit: 100
-        rate_limit: 50
-        ratio: 2
-      - host: 192.168.1.2
-        partition: Common
-        port: 80
-        description: web server
-        connection_limit: 100
-        rate_limit: 50
-        ratio: 2
-      - host: 192.168.1.3
-        partition: Common
-        port: 80
-        description: web server
-        connection_limit: 100
-        rate_limit: 50
-        ratio: 2     
-
+    bigip_pool_member_aggregate: ""
+      
   tasks:
      - name: Add pool members aggregate, remove non aggregates
        bigip_pool_member:
