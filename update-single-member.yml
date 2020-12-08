@@ -1,8 +1,9 @@
 ---
 - hosts: localhost
+  set_facts:
+     bigip_pool_member_aggregate: "{{ bigip_pool_member_aggregate |from_yaml }}"
   vars:
     bigip_pool_name: my-pool
-     
     bigip_pool_member_replace_all: yes
     bigip_server_address: 192.168.122.5
     bigip_admin: admin
