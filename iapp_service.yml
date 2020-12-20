@@ -1,0 +1,78 @@
+---
+- hosts: localhost
+  vars: 
+    - pool_address: 192.168.1.60
+    - pool_port: 80
+    - pool_fqdn: test.myDomain.com
+    - ingrass_from: wan
+    - egrass_from: lan
+    - pool_members: 
+         - row:
+            - 10.10.10.11
+            - 80
+            - 0
+         - row: 
+            - 20.20.20.21
+            - 80
+            - 0
+         - row:
+            - 30.30.30.31
+            - 80
+            - 0
+    - admin_user: azureuser 
+    - password: Kostas580!
+    - f5_server: big1.standalone.f5demo.cloud
+
+  tasks:
+   - name: Create HTTP iApp service from iApp template
+     bigip_iapp_service:
+       name: test-service
+       template: f5.http
+       state: present
+       parameters:
+         variables:
+           - name: pool__addr
+             value: "{{ pool_address }}"
+           - name: pool__port   
+             value: "{{ pool_port }}"
+           - name: pool__fqdn_to_use
+             value: "{{ pool_fqdn }}"
+           - name: net__client_mode
+             value: "{{ ingrass_from }}"
+           - name: net__server_mode
+             value: "{{ egrass_from }}"
+         tables: 
+           - name: basic__snatpool_members    
+           - name: net__snatpool_members
+           - name: optimizations__hosts
+           - name: server_pools__servers
+           - name: pool__hosts
+             columnNames:
+              - name
+             rows:
+              - row:
+                - internal.company.bar  
+           - name: pool__members
+             columnNames:
+               - addr
+               - port
+               - connection_limit
+             rows: "{{ pool_members }}"
+              # - row:
+              #    - 10.10.10.11
+              #    - 80
+              #    - 0
+              # - row: 
+              #   - 20.20.20.21
+              #   - 80
+              #   - 0
+              # - row:
+              #   - 30.30.30.31
+              #   - 80
+              #   - 0                  
+       provider:
+        user: "{{ admin_user }}"
+        password: "{{ password }}"
+        server: "{{ f5_server }}"
+        validate_certs: no
+     delegate_to: localhost
